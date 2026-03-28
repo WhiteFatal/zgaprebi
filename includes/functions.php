@@ -105,10 +105,14 @@ class image{
 	}
 	public static function isequalsize($photo,$w,$h){
 		if(@$w<1 || @$h<1) return true;
+		
+		// Check if the file exists before trying to process it
+		if (!file_exists($photo)) return false;
+
 		$photo_need = $w.$h;
 		$inf = self::imagecreatefromx($photo);
 		
-		// Check if $inf is a valid image object/resource before using it
+		// Safety check for PHP 8.1 GdImage object
 		if (!$inf || !($inf instanceof \GdImage || is_resource($inf))) {
 			return false;
 		}
