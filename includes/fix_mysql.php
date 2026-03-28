@@ -53,11 +53,12 @@ if (!function_exists('mysql_connect')) {
         $link = $link ?: $GLOBALS['mysql_link'];
         return mysqli_close($link);
     }
-    // Fix for removed magic_quotes in PHP 8+
-    if (!function_exists('get_magic_quotes_gpc')) {
-        function get_magic_quotes_gpc() {
-            return false;
-        }
+}
+
+// Fix for removed magic_quotes in PHP 8+
+if (!function_exists('get_magic_quotes_gpc')) {
+    function get_magic_quotes_gpc() {
+        return false;
     }
 }
 ?>
