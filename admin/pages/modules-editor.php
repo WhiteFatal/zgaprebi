@@ -85,16 +85,27 @@ if(isset($_GET['photoeditor'])){
 }
 
 if(isset($_POST['upl_field'])){
-	ob_clean();
-		if (!empty($_FILES)) {
-		$ext = end(explode('.',$_FILES['Filedata']['name']));
-		$targetFolder = '/storage/uploads/'.$_GET['mod']; // Relative to the root
-		$tempFile = $_FILES['Filedata']['tmp_name'];
-		$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
-		$newfilename = date('ymdhis').getUniqueCode(12).'.'.$ext; //.'_'.$_FILES['Filedata']['name'];
-		//$newfilename = strtr($newfilename,array(','=>'_',' '=>'_'));
-		$targetFile  = rtrim($targetPath,'/') . '/'.$newfilename;
-		$fileParts = pathinfo($_FILES['Filedata']['name']);	
+    ob_clean();
+    if (!empty($_FILES)) {
+        // Fix for PHP 8.1: end() requires a variable
+        $file_name = $_FILES['Filedata']['name'];
+        $temp_ext = explode('.', $file_name);
+        $ext = strtolower(end($temp_ext));
+
+        $targetFolder = '/storage/uploads/'.$_GET['mod'];
+        $tempFile = $_FILES['Filedata']['tmp_name'];
+        
+        // Use rtrim to prevent double slashes
+        $targetPath = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . $targetFolder;
+        
+        // Ensure directory exists
+        if (!file_exists($targetPath)) {
+            mkdir($targetPath, 0777, true);
+        }
+
+        $newfilename = date('ymdhis').getUniqueCode(12).'.'.$ext;
+        $targetFile  = $targetPath . '/' . $newfilename;
+        $fileParts = pathinfo($file_name);	
 		if (1==1) {
 			move_uploaded_file($tempFile,$targetFile);
 			if($_POST['multi']=='no'){
