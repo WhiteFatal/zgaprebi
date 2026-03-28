@@ -4,9 +4,9 @@
 			$numberpart=explode($separator,$number);
 			@$numberpart[1]=substr_replace($numberpart[1],$separator,$precision,0);
 			if($numberpart[0]>=0){
-				$numberpart[1]=floor($numberpart[1]);
+				$numberpart[1]=floor((float)$numberpart[1]); // Added (float)
 			}else{
-				$numberpart[1]=ceil($numberpart[1]);
+				$numberpart[1]=ceil((float)$numberpart[1]);  // Added (float)
 			}
 			$ceil_number= array($numberpart[0],$numberpart[1]);
 			
