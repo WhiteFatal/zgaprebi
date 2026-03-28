@@ -1,4 +1,5 @@
 <?php
+include_once('fix_mysql.php');
 
 if (get_magic_quotes_gpc()) {
     $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
