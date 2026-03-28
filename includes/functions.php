@@ -107,7 +107,13 @@ class image{
 		if(@$w<1 || @$h<1) return true;
 		$photo_need = $w.$h;
 		$inf = self::imagecreatefromx($photo);
-		@$photo_is = imagesx($inf).imagesy($inf);
+		
+		// Check if $inf is a valid image object/resource before using it
+		if (!$inf || !($inf instanceof \GdImage || is_resource($inf))) {
+			return false;
+		}
+
+		$photo_is = imagesx($inf).imagesy($inf);
 		return ($photo_need!=$photo_is) ? false : true;
 	}
 	public static function resize($file, $newfile, $path, $maxwidth, $maxheight){
