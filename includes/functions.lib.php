@@ -172,12 +172,12 @@ function fileGetContent($file){
 	return $contents;
 }
 
-function sPOST($POSTVAR=false,$value){
-	if(isset($POSTVAR) && $POSTVAR==$value) {
-		return 'selected="selected"';
-	} else {
-		return '';
-	}
+function sPOST($value, $POSTVAR=false){
+    if(isset($POSTVAR) && $POSTVAR==$value) {
+        return 'selected="selected"';
+    } else {
+        return '';
+    }
 }
 function get_string_between($string, $start, $end){
 	$string = " ".$string;
