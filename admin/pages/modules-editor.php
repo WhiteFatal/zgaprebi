@@ -128,7 +128,7 @@ if(isset($_POST['upl_field'])){
 				if(is_numeric($structure[$_POST['upl_field']]['params']['width']) &&
 				   is_numeric($structure[$_POST['upl_field']]['params']['height']))
 				  {
-						image::resize($newfilename,$newfilename, '..'.$targetFolder.'/',
+						image::resize($newfilename,$newfilename, rtrim($_SERVER['DOCUMENT_ROOT'],'/') .$targetFolder.'/',
 										$structure[$_POST['upl_field']]['params']['width'],
 										$structure[$_POST['upl_field']]['params']['height']);
 				   }
@@ -152,11 +152,11 @@ if(isset($_POST['upl_field'])){
 				if(is_numeric($structure[$_POST['upl_field']]['params']['twidth']) &&
 				   is_numeric($structure[$_POST['upl_field']]['params']['theight']))
 				  {
-					image::resize($newfilename,'thumb_'.$newfilename, '..'.$targetFolder.'/',
+					image::resize($newfilename,'thumb_'.$newfilename, rtrim($_SERVER['DOCUMENT_ROOT'],'/') .$targetFolder.'/',
 									$structure[$_POST['upl_field']]['params']['twidth'],
 									$structure[$_POST['upl_field']]['params']['theight']);
 				  } else {
-					copy('..'.$targetFolder.'/'.$newfilename,'..'.$targetFolder.'/thumb_'.$newfilename);  
+					copy(rtrim($_SERVER['DOCUMENT_ROOT'],'/') .$targetFolder.'/'.$newfilename, rtrim($_SERVER['DOCUMENT_ROOT'],'/') .$targetFolder.'/thumb_'.$newfilename);  
 				  }
 				}
 			}
@@ -574,7 +574,7 @@ fieldset textarea.wysiwyg{
 </style>
 
 <link href="js_css/uploadify.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="js_css/plugins/others/jquery.uploadify.min.js"></script>
+<!-- uploadify.js removed: replaced with native HTML5 fetch uploader (Flash/SWF no longer supported) -->
 <script type="text/javascript" src="js_css/plugins/others/jquery.Jcrop.min.js"></script>
 <script type="text/javascript" src="/common/datetimepicker/jquery-ui-sliderAccess.js"></script>
 
@@ -609,27 +609,54 @@ function removeGalleryFile(req,t){
 }
 
 function init_uploadify(){
-	$('input:file').each(function(i,e) {
-		var update = $(this).attr('contId');
-		var uplfor = $(this).attr('for');
-		var multiple = ($(this).attr('multi')=='true') ? true : false;
-		if(multiple) {
-			formdata = {'upl_field':update, 'multi':'yes', 'uplfor':uplfor,'<?php echo session_name();?>':'<?php echo session_id();?>'};
-		} else {
-			formdata = {'upl_field':update, 'multi':'no',  'uplfor':uplfor,'<?php echo session_name();?>':'<?php echo session_id();?>'};
-		}
+	$('input[type="file"]').each(function(i, e) {
+		var input    = $(this);
+		var update   = input.attr('contId');
+		var uplfor   = input.attr('for');
+		var multiple = (input.attr('multi') === 'true');
 
-		buttonImage = 'img/'+$(this).attr('bg')+'.png';
-		$(e).uploadify({
-			formData  : formdata,
-			swf	      : 'img/uploadify.swf',
-			height	  : 29,
-			width	  : 252,
-			multi     : multiple,
-			buttonImage : buttonImage,
-			uploader : '<?php echo full_url(); ?>&uploadscript',
-			onError : function(event, queueID, fileObj, errorObj) { alert(errorObj.type + ' ' + errorObj.info ); },
-			onQueueComplete	: function(queueData) { reloader(update); }
+		// Remove duplicate listener if re-initialised after reload
+		input.off('change.uploadify').on('change.uploadify', function() {
+			var files = Array.from(this.files);
+			if (!files.length) return;
+
+			var statusId = 'upl_status_' + update;
+			$('#' + statusId).remove();
+			input.after('<div id="' + statusId + '" style="font-size:12px;color:#666;margin-top:4px"><?php _e("იტვირთება..."); ?></div>');
+
+			var queue = files.slice();
+
+			function uploadNext() {
+				if (!queue.length) {
+					$('#' + statusId).remove();
+					reloader(update);
+					return;
+				}
+				var file = queue.shift();
+				var fd   = new FormData();
+				fd.append('Filedata', file);
+				fd.append('upl_field', update);
+				fd.append('multi', multiple ? 'yes' : 'no');
+				fd.append('uplfor', uplfor);
+				fd.append('<?php echo session_name(); ?>', '<?php echo session_id(); ?>');
+
+				fetch('<?php echo full_url(); ?>', {
+					method: 'POST',
+					body: fd
+				})
+				.then(function(r){ return r.text(); })
+				.then(function(data){
+					if (data.trim() !== 'ok') {
+						alert('<?php _e("ატვირთვის შეცდომა"); ?>: ' + data);
+					}
+					uploadNext();
+				})
+				.catch(function(err){
+					alert('<?php _e("ატვირთვა ვერ მოხერხდა"); ?>: ' + err);
+					$('#' + statusId).remove();
+				});
+			}
+			uploadNext();
 		});
 	});
 }
