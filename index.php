@@ -10,7 +10,7 @@ include ('includes/functions.init.php');
 
 //if(in_array($_SERVER['REMOTE_ADDR'], array('185.163.200.22'))) die('Under reconstruction...');
 
-$vars = explode('/',@$_SERVER['REDIRECT_URL']);
+$vars = explode('/', (string)@$_SERVER['REDIRECT_URL']);
 
 foreach($vars as $k => $v) {
 	$vars[$k] = trim($v);
