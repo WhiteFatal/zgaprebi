@@ -104,29 +104,30 @@ class image{
 		return (count($c)>2) ? true : false;
 	}
 	public static function isequalsize($photo, $w, $h){
-		// NEW FIX: Convert relative path to absolute path
-		$photo = str_replace('../', rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/', $photo);
-
-
-		if(@$w < 1 || @$h < 1) return true;
+		// 1. Basic safety checks
+		if(@$w < 1 || @$h < 1 || empty($photo)) return true;
 		
-		// This will tell us the exact path PHP is looking for
-		error_log("Zgaprebi Debug: Searching for image at: " . $photo);
-
-		if (!file_exists($photo)) {
-			error_log("Zgaprebi Debug: FILE DOES NOT EXIST at: " . $photo);
-			return false;
+		// 2. Try to find the file (check both relative and absolute)
+		$real_path = $photo;
+		if (!file_exists($real_path)) {
+			$real_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . ltrim(str_replace('../', '', $photo), '/');
 		}
 
-		$inf = self::imagecreatefromx($photo);
+		// 3. If file still doesn't exist, just return false (don't crash!)
+		if (!file_exists($real_path)) {
+			return false; 
+		}
+
+		// 4. Try to load the image
+		$inf = self::imagecreatefromx($real_path);
 		
+		// 5. Final PHP 8.1 object check
 		if (!$inf || !($inf instanceof \GdImage || is_resource($inf))) {
-			error_log("Zgaprebi Debug: imagecreatefromx FAILED for: " . $photo);
 			return false;
 		}
 
 		$photo_is = imagesx($inf) . imagesy($inf);
-		return ($w.$h != $photo_is) ? false : true;
+		return ($w.$h == $photo_is);
 	}
 
 	public static function resize($file, $newfile, $path, $maxwidth, $maxheight){
