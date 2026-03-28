@@ -103,23 +103,28 @@ class image{
 		$c = @getimagesize($photo);
 		return (count($c)>2) ? true : false;
 	}
-	public static function isequalsize($photo,$w,$h){
-		if(@$w<1 || @$h<1) return true;
+	public static function isequalsize($photo, $w, $h){
+		if(@$w < 1 || @$h < 1) return true;
 		
-		// Check if the file exists before trying to process it
-		if (!file_exists($photo)) return false;
+		// This will tell us the exact path PHP is looking for
+		error_log("Zgaprebi Debug: Searching for image at: " . $photo);
 
-		$photo_need = $w.$h;
-		$inf = self::imagecreatefromx($photo);
-		
-		// Safety check for PHP 8.1 GdImage object
-		if (!$inf || !($inf instanceof \GdImage || is_resource($inf))) {
+		if (!file_exists($photo)) {
+			error_log("Zgaprebi Debug: FILE DOES NOT EXIST at: " . $photo);
 			return false;
 		}
 
-		$photo_is = imagesx($inf).imagesy($inf);
-		return ($photo_need!=$photo_is) ? false : true;
+		$inf = self::imagecreatefromx($photo);
+		
+		if (!$inf || !($inf instanceof \GdImage || is_resource($inf))) {
+			error_log("Zgaprebi Debug: imagecreatefromx FAILED for: " . $photo);
+			return false;
+		}
+
+		$photo_is = imagesx($inf) . imagesy($inf);
+		return ($w.$h != $photo_is) ? false : true;
 	}
+
 	public static function resize($file, $newfile, $path, $maxwidth, $maxheight){
 		GD2::resize($file, $newfile, $path, $maxwidth, $maxheight);
 	}
