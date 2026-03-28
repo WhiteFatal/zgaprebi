@@ -61,4 +61,18 @@ if (!function_exists('get_magic_quotes_gpc')) {
         return false;
     }
 }
+
+// Fix for removed each() function in PHP 8+
+if (!function_exists('each')) {
+    function each(&$array) {
+        $key = key($array);
+        if ($key === null) {
+            return false;
+        }
+        $value = current($array);
+        next($array);
+        return [1 => $value, 'value' => $value, 0 => $key, 'key' => $key];
+    }
+}
+
 ?>
