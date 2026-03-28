@@ -1,0 +1,1 @@
+<div style="font-size:12px; text-align:center; margin-top:5px; color:#999999"><?php _e('სამწუხაროდ აღნიშნული გვერდი ვერ მოიძებნა'); ?></div>
