@@ -104,6 +104,9 @@ class image{
 		return (count($c)>2) ? true : false;
 	}
 	public static function isequalsize($photo, $w, $h){
+		// NEW FIX: Convert relative path to absolute path
+		$photo = str_replace('../', $_SERVER['DOCUMENT_ROOT'] . '/', $photo);
+
 		if(@$w < 1 || @$h < 1) return true;
 		
 		// This will tell us the exact path PHP is looking for
