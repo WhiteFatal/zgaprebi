@@ -2,7 +2,7 @@
 ob_start();
 session_name("managment");
 session_start();
-$DOCstartTime = round(microtime(), 3);
+$DOCstartTime = round(microtime(true), 3);
 include ('../includes/config.php');
 
 $_ADM_CONTLNG = (isset($_COOKIE['admin_contentlng'])) ? $_COOKIE['admin_contentlng'] : key($_CFG['availLangs']);
