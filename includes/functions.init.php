@@ -3,17 +3,27 @@
 function permalink2querystring($array){
 	$_PAGE = array();
 	$_P	   = array();
+    // Fix for foreach on null/non-array
+    $array = is_array($array) ? $array : array();
 	foreach($array as $k => $v){
-		$tmp = explode('-',$v);
-		if(is_numeric($tmp[0])) $_P['story'] = $tmp[0];
-		if(@$tmp[0]=='page') 	$pageids = $tmp[1];
+		$tmp = explode('-', (string)$v);
+		if(isset($tmp[0]) && is_numeric($tmp[0])) $_P['story'] = $tmp[0];
+		if(isset($tmp[0]) && $tmp[0]=='page') 	$pageids = isset($tmp[1]) ? $tmp[1] : null;
 		}
-	$page = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".$_GET['l']."' AND `permalink`='".@$array[0]."' AND `enabled`=1");
+        
+	$page = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".(@$_GET['l'])."' AND `permalink`='".(@$array[0])."' AND `enabled`=1");
+    // Fix: initialize as empty array if query fails to avoid offset errors
+    $page = is_array($page) ? $page : array();
+
 	$subpage = sql::getRow("SELECT * FROM `cn_sitemap`
-									WHERE `lang`='".$_GET['l']."' AND `permalink`='".@$array[1]."' AND `parent`='".$page['cat_id']."' AND `enabled`=1");
+									WHERE `lang`='".(@$_GET['l'])."' AND `permalink`='".(@$array[1])."' AND `parent`='".(@$page['cat_id'])."' AND `enabled`=1");
+    $subpage = is_array($subpage) ? $subpage : array();
+
 	$subpage2 = sql::getRow("SELECT * FROM `cn_sitemap`
-								WHERE `lang`='".$_GET['l']."' AND `permalink`='".@$array[2]."' AND `parent`='".$subpage['cat_id']."' AND `enabled`=1");
-		if(count($page)>2){
+								WHERE `lang`='".(@$_GET['l'])."' AND `permalink`='".(@$array[2])."' AND `parent`='".(@$subpage['cat_id'])."' AND `enabled`=1");
+    $subpage2 = is_array($subpage2) ? $subpage2 : array();
+
+		if(count((array)$page)>2){
 			$_PAGE[] = array('pagetype'=>$page['pagetype'],
 							 'source'=>$page['source'],
 							 'extra_source'=>$page['extra_source'],
@@ -21,7 +31,7 @@ function permalink2querystring($array){
 							 'title'=>$page['title'],
 							 'pname'=>@$array[0]);
 		}
-	if(count($subpage)>2){
+	if(count((array)$subpage)>2){
 		$_PAGE[] = array('pagetype'=>$subpage['pagetype'],
 						 'source'=>$subpage['source'],
 						 'extra_source'=>$subpage['extra_source'],
@@ -29,12 +39,12 @@ function permalink2querystring($array){
 						 'title'=>$subpage['title'],
 						 'pname'=>@$array[1]);
 	}
-	if(count($subpage2)>2){
+	if(count((array)$subpage2)>2){
 		$_PAGE[] = array('pagetype'=>$subpage2['pagetype'],
 						 'source'=>$subpage2['source'],
 						 'extra_source'=>$subpage2['extra_source'],
-						 'permalink'=>$page['permalink'],
-						 'title'=>$page['title'],
+						 'permalink'=>@$page['permalink'],
+						 'title'=>@$page['title'],
 						 'pname'=>@$array[2]);
 	}
 	foreach($_PAGE as $k => $p){
@@ -56,24 +66,29 @@ function permalink2querystring($array){
 
 	}
 	if(@is_numeric($pageids)) $_P['pg'] = $pageids;
-//	print_r($_P);
 	return $_P;
 	}
 
 function generate_homepagevars(){
 	$_PAGE = array();
 	$_P	   = array();
-	$page = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".$_GET['l']."' AND `enabled`=1 AND `homepage`='1'");
-	$subpage  = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".$_GET['l']."' AND `cat_id`='".@$page['parent']."'   AND `enabled`=1");
-	$subpage2 = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".$_GET['l']."' AND `cat_id`='".$subpage['parent']."' AND `enabled`=1");
-		if(count($page)>2){
+	$page = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".(@$_GET['l'])."' AND `enabled`=1 AND `homepage`='1'");
+    $page = is_array($page) ? $page : array();
+
+	$subpage  = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".(@$_GET['l'])."' AND `cat_id`='".@$page['parent']."'   AND `enabled`=1");
+    $subpage = is_array($subpage) ? $subpage : array();
+
+	$subpage2 = sql::getRow("SELECT * FROM `cn_sitemap` WHERE `lang`='".(@$_GET['l'])."' AND `cat_id`='".@$subpage['parent']."' AND `enabled`=1");
+    $subpage2 = is_array($subpage2) ? $subpage2 : array();
+
+	if(count((array)$page)>2){
 		$_PAGE[] = array('pagetype'=>$page['pagetype'],'source'=>$page['source'],'extra_source'=>$page['extra_source'],'permalink'=>$page['permalink'],'pname'=>@$array[0]);
 		}
-	if(count($subpage)>2){
-		$_PAGE[] = array('pagetype'=>$subpage['pagetype'],'source'=>$subpage['source'],'extra_source'=>$subpage['extra_source'],'permalink'=>$page['permalink'],'pname'=>@$array[1]);
+	if(count((array)$subpage)>2){
+		$_PAGE[] = array('pagetype'=>$subpage['pagetype'],'source'=>$subpage['source'],'extra_source'=>$subpage['extra_source'],'permalink'=>@$page['permalink'],'pname'=>@$array[1]);
 	}
-	if(count($subpage2)>2){
-		$_PAGE[] = array('pagetype'=>$subpage2['pagetype'],'source'=>$subpage2['source'],'extra_source'=>$subpage2['extra_source'],'permalink'=>$page['permalink'],'pname'=>@$array[2]);
+	if(count((array)$subpage2)>2){
+		$_PAGE[] = array('pagetype'=>$subpage2['pagetype'],'source'=>$subpage2['source'],'extra_source'=>$subpage2['extra_source'],'permalink'=>@$page['permalink'],'pname'=>@$array[2]);
 	}
 	foreach($_PAGE as $k => $p){
 		if($k=='0') $k='';
@@ -91,7 +106,6 @@ function generate_homepagevars(){
 			if($t!='') $_P['p'.$k] = str_replace('.php','',$p['source']);
 		}
 	}
-//	print_r($_P);
 	return $_P;
 }
 
