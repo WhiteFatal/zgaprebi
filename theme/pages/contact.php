@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 	<textarea name="message" placeholder="<?php _e('შეტყობინება'); ?>"></textarea>
                 </div>
                 <span class="status">&nbsp;</span>
-                <input type="submit" name="submit" value="<?php _e('გაგზავნა'); ?>"/>
+                <input type="submit" value="<?php _e('გაგზავნა'); ?>"/>
                 <div class="clb"></div>
             </form>
         </div>
