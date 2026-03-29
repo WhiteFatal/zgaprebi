@@ -76,20 +76,6 @@
 
 <!-- reCAPTCHA v3 -->
 <script src="https://www.google.com/recaptcha/api.js?render=6LfOBJ0sAAAAABdctjr0j5vFv3up0pJoMw5vEZCz"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var form = this;
-        grecaptcha.ready(function() {
-            grecaptcha.execute('6LfOBJ0sAAAAABdctjr0j5vFv3up0pJoMw5vEZCz', {action: 'contact'}).then(function(token) {
-                document.getElementById('recaptcha_token').value = token;
-                form.submit();
-            });
-        });
-    });
-});
-</script>
 
 <div class="popup">
     <?php
@@ -153,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 	<textarea name="message" placeholder="<?php _e('შეტყობინება'); ?>"></textarea>
                 </div>
                 <span class="status">&nbsp;</span>
-                <input type="submit" class="contact-submit" value="<?php _e('გაგზავნა'); ?>"/>
+                <input type="submit" name="submit" class="contact-submit" value="<?php _e('გაგზავნა'); ?>"/>
                 <div class="clb"></div>
             </form>
         </div>

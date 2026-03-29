@@ -134,17 +134,23 @@ $(document).ready(function(e) {
 	
 	$('#contact-form').submit(function(){
 		$('#contact-form input[type=submit]').attr('disabled','disabled');
-		$.post($('#contact-form').attr('action'),$(this).serialize(),function(data){
-			if(data.res == 'success'){
-				$('#contact-form textarea').val('');
-				$('#contact-form input[type=submit]').removeAttr('disabled');
-				hide_popup('registration',false,false);
-				show_popup('confirm','კონტაქტი',data.txt);
-			}else{
-				$('#contact-form').children('.status').text(data.txt).show('fast');
-				$('#contact-form input[type=submit]').removeAttr('disabled');
-			}
-		},"JSON");
+		var form = this;
+		grecaptcha.ready(function() {
+			grecaptcha.execute('6LfOBJ0sAAAAABdctjr0j5vFv3up0pJoMw5vEZCz', {action: 'contact'}).then(function(token) {
+				$('#recaptcha_token').val(token);
+				$.post($('#contact-form').attr('action'),$(form).serialize(),function(data){
+					if(data.res == 'success'){
+						$('#contact-form textarea').val('');
+						$('#contact-form input[type=submit]').removeAttr('disabled');
+						hide_popup('registration',false,false);
+						show_popup('confirm','კონტაქტი',data.txt);
+					}else{
+						$('#contact-form').children('.status').text(data.txt).show('fast');
+						$('#contact-form input[type=submit]').removeAttr('disabled');
+					}
+				},"JSON");
+			});
+		});
 		return false;
 	});
 	
