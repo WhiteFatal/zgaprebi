@@ -72,6 +72,7 @@ jobs:
           $_CFG['roles']['others']    = 'სხვადასხვა';
 
           define('FILE_SECURITY_KEY', '${{ secrets.FILE_SECURITY_KEY }}');
+          define('RECAPTCHA_SECRET', '${{ secrets.RECAPTCHA_SECRET }}');
 
           if (in_array($_SERVER['REMOTE_ADDR'], $_CFG['display_errors'])) error_reporting(-1);
           ini_set("display_errors", (in_array($_SERVER['REMOTE_ADDR'], $_CFG['display_errors'])));

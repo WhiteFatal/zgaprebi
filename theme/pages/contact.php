@@ -8,6 +8,21 @@
 	
 	if(@$_POST['contact']==1){
 		ob_clean();
+
+		// reCAPTCHA v3 verification
+		$recaptcha_token = @$_POST['recaptcha_token'];
+		if(empty($recaptcha_token)){
+			$status = array('res'=>'error','txt'=>__('reCAPTCHA შემოწმება ვერ მოხერხდა!'));
+			echo json_encode($status); die();
+		}
+
+		$recaptcha_response = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.RECAPTCHA_SECRET.'&response='.$recaptcha_token.'&remoteip='.$_SERVER['REMOTE_ADDR']);
+		$recaptcha_data = json_decode($recaptcha_response, true);
+
+		if(!$recaptcha_data['success'] || $recaptcha_data['score'] < 0.5){
+			$status = array('res'=>'error','txt'=>__('სპამის დაცვის შემოწმება ვერ გაიარა!'));
+			echo json_encode($status); die();
+		}
 		
 		if(trim(@$_POST['flname'])==''){
 			$status = array('res'=>'error','txt'=>__('ჩაწერეთ სახელი და გვარი!'));
@@ -54,6 +69,24 @@
 <ogmeta>
 	<title><?php echo $_GET['ptitle'].' | '.$_CFG['siteName']; ?></title>
 </ogmeta>
+
+<!-- reCAPTCHA v3 -->
+<script src="https://www.google.com/recaptcha/api.js?render=6LfOBJ0sAAAAABdctjr0j5vFv3up0pJoMw5vEZCz"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var form = this;
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6LfOBJ0sAAAAABdctjr0j5vFv3up0pJoMw5vEZCz', {action: 'contact'}).then(function(token) {
+                document.getElementById('recaptcha_token').value = token;
+                form.submit();
+            });
+        });
+    });
+});
+</script>
+
 <div class="popup">
     <?php
 		if($is_logined==false){
@@ -92,6 +125,7 @@
         	<span class="contact_stand_text"><?php _e('კონტაქტი ადმინისტრაციასთან'); ?></span>
         	<form id="contact-form" action="<?php echo full_url(); ?>" method="post">
             	<input type="hidden" name="contact" value="1"/>
+            	<input type="hidden" name="recaptcha_token" id="recaptcha_token" value=""/>
                 <div class="inputs">
                     <input type="text" name="flname" autocomplete="off" placeholder="<?php _e('სახელი და გვარი'); ?>" value="<?php echo @$_SESSION['user']['flname']; ?>"/>
                     <input type="text" name="email" autocomplete="off" placeholder="<?php _e('ელ. ფოსტა'); ?>" value="<?php echo @$_SESSION['user']['username']; ?>"/>
