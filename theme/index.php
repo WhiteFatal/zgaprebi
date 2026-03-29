@@ -39,6 +39,7 @@
 <script type="text/javascript" src="/theme/js_css/jquery.nicescroll.min.js"></script>
 <script type="text/javascript" src="/theme/js_css/jquery.tooltipster.min.js"></script>
 <script type="text/javascript" src="/theme/js_css/jquery.alphanum.min.js"></script>
+<script type="text/javascript" src="/theme/js_css/geokbd.js"></script>
 <script type="text/javascript" src="/theme/js_css/_script.js"></script>
 <!--<meta name="author" content="Nika Jangveladze, enji777@gmail.com" />-->
 <meta name="robots" content="noimageindex">
