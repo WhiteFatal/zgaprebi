@@ -30,7 +30,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<!--<link rel="shortcut icon" type="image/x-icon" href="/theme/img/logo.ico">-->
+<link rel="icon" type="image/png" href="/theme/images/logo.png">
 <link rel="stylesheet" type="text/css" href="/theme/js_css/styles.min.css">
 <link rel="stylesheet" type="text/css" href="/theme/js_css/jquery-ui.min.css">
 <script type="text/javascript" src="/theme/js_css/jquery-2.1.1.min.js"></script>
@@ -43,7 +43,7 @@
 <!--<meta name="author" content="Nika Jangveladze, enji777@gmail.com" />-->
 <meta name="robots" content="noimageindex">
 <meta name="description" content="ზღაპრები">
-<meta name="keywords" content="ზღაპრები, მეზღაპრე, ზღაპარი, enji, enji777@gmail.com, Nika Jangveladze, ნიკა ჯანგველაძე">
+<meta name="keywords" content="ზღაპრები, მეზღაპრე, ზღაპარი">
 <meta property="fb:app_id" content="790277907718676"/>
 <meta property="og:type" content="website" />
 <meta http-equiv="ogmeta" />
