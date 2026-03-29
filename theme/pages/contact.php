@@ -19,9 +19,13 @@
 		$recaptcha_response = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.RECAPTCHA_SECRET.'&response='.$recaptcha_token.'&remoteip='.$_SERVER['REMOTE_ADDR']);
 		$recaptcha_data = json_decode($recaptcha_response, true);
 
-		if(!$recaptcha_data['success'] || $recaptcha_data['score'] < 0.5){
-			$status = array('res'=>'error','txt'=>__('სპამის დაცვის შემოწმება ვერ გაიარა!'));
-			echo json_encode($status); die();
+		$is_localhost = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']);
+
+		if(!$is_localhost){
+			if(!$recaptcha_data['success'] || $recaptcha_data['score'] < 0.5){
+				$status = array('res'=>'error','txt'=>__('სპამის დაცვის შემოწმება ვერ გაიარა!'));
+				echo json_encode($status); die();
+			}
 		}
 		
 		if(trim(@$_POST['flname'])==''){
